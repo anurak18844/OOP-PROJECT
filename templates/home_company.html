@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block title %}HOME COMPANY{% endblock %}
+{% block content %}
+    <div class="container mt-5">
+        <div class="h5 mb-5  text-center">HOME COMPANY</div>
+        <!-- <form action="POST"> -->
+            <div class="mb-3">
+            Email address
+            <input type="email" class="form-control" id="email">
+            </div>
+            <div class="mb-3">
+            Password
+            <input type="password" class="form-control" id="password">
+            </div>
+           <div class="mb-3">
+            Phonenumber
+            <input type="text" class="form-control" id="phone">
+           </div>
+           <div class="mb-3">
+            Name Compay
+            <input type="text" class="form-control" id="fullname">
+           </div>
+           <div class="mb-3">
+            Profile Company
+            <input type="file" class="form-control" id="multiFiles" name="files[]">
+           </div>
+           <img src="" width="200" style="display:none;" />
+                <br>
+            <div id="disp_tmp_path"></div>
+           <div class="d-grid pt-3">
+            <!-- <input type="submit" class="btn btn-primary" value="ADD COMPANY"></input> -->
+            <button id="upload" class="btn btn-primary">ADD COMPANY</button>
+           </div>
+          <!-- </form> -->
+    </div>
+{% endblock %}
+
+

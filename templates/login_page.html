@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block title %}LOGIN{% endblock%}
+{% block content%}
+<script>
+            $(document).ready(function (e) {
+                $('#upload').on('click', function () {
+                var form_data = new FormData();
+                form_data.append("email", $('#email').val())
+                form_data.append("password", $('#password').val())
+                $.ajax({
+                    url: '/login',
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    data: form_data,
+                    type: 'POST',
+                    beforeSend: function(){
+                    $.LoadingOverlay('show', {
+                        background: 'rgba(200,200,200,0.6)',
+                        textResizeFactor: 0.15
+                    });
+                },
+                    success: function (data) {
+                            text = data['message']
+                            if(text == 'Not Have Accout'){
+                                    Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: text
+                                })
+                            }
+                    },
+                    complete: () => {
+                        $.LoadingOverlay('hide')
+                    }
+                });
+            });
+        });
+</script>
+    <div class="container mt-5">
+        <div class="h5 mb-5  text-center">ADD COMPANY</div>
+            <div class="mb-3">
+            Email address
+            <input type="email" class="form-control" id="email">
+            </div>
+            <div class="mb-3">
+            Password
+            <input type="password" class="form-control" id="password">
+            </div>
+           <div class="d-grid pt-3">
+            <button id="upload" class="btn btn-primary">ADD COMPANY</button>
+           </div>
+    </div>
+{% endblock %}
+
+
