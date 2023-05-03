@@ -1,58 +1,58 @@
+import sys
+sys.path.append("../init_database_mongo.py") 
+from init_database_mongo import InitDatabaseMongoDB
 class TripInStance:
-    def __init__(self, departure_date, time_out, has_meal, trip_status, trip):
+    def __init__(self, date_time, trip,id_bus):
         self.__id = None
-        self.__departure_date = departure_date
-        self.__time_out = time_out
-        self.__has_meal = has_meal
-        self.__trip_status = trip_status
         self.__trip = trip
+        self.__date_time = date_time
+        self.__id_bus= id_bus
 
     @property
     def id(self):
         return self.__id
     
-    @id.setter
-    def id(self, new_id):
-        self.__id = new_id
-
-    @property
-    def departure_date(self):
-        return self.__departure_date
-    
-    @departure_date.setter
-    def departure_date(self, new_departure_date):
-        self.__departure_date = new_departure_date
-
-    def time_out(self):
-        return self.__time_out
-    
-    @time_out.setter
-    def time_out(self, new_time_out):
-        self.__time_out = new_time_out
-
-    @property
-    def has_meal(self):
-        return self.__has_meal
-    
-    has_meal.setter
-    def has_meal(self, new_has_meal):
-        self.__has_meal = new_has_meal
-
-    @property
-    def trip_status(self):
-        return self.__trip_status
-    
-    @trip_status.setter
-    def trip_status(self, new_trip_status):
-        self.__trip_status = new_trip_status
-
     @property
     def trip(self):
         return self.__trip
+        
+    @property
+    def date_time(self):
+        return self.__date_time
     
-    @trip.setter
-    def trip(self, new_trip):
-        self.__trip = new_trip
+    @property
+    def id_bus(self):
+        return self.__id_bus
+    
+    @id.setter
+    def id(self, id):
+        self.__id = id
 
-    def __str__(self):
-        return "departure_date : {}\n time_out : {}\nhas_meal : {}\ntrip_status : {}\ntrip : {}".format(self.__departure_date, self.__time_out, self.__has_meal, self.__trip_status, self.__trip)
+    @trip.setter
+    def trip(self, trip):
+        self.__trip = trip
+
+    @date_time.setter
+    def date_time(self, date_time):
+        self.__date_time = date_time
+
+    @id_bus.setter
+    def id_bus(self, id_bus):
+        self.__id_bus = id_bus
+
+    def create_docs(self):
+        docs = {
+            "date_time": self.__date_time,
+            "id_bus": self.__id_bus,
+            "trip": self.__trip
+        }
+
+        return docs
+    
+    def insert_data(self):
+        docs = self.create_docs()
+        trip_instance_collectipn = InitDatabaseMongoDB().trip_instance
+        trip_instance_collectipn.insert_one(docs)
+
+        return "INSERT TRIP INSTANCE SUCCESS!"
+        

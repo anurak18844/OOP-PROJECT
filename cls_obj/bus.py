@@ -1,4 +1,3 @@
-
 import sys
 sys.path.append("../init_database_mongo.py") 
 from init_database_mongo import InitDatabaseMongoDB
@@ -70,7 +69,6 @@ class Bus():
 
     def insert_data(self):
         docs = self.create_docs()
-        print(docs)
         bus_collection = InitDatabaseMongoDB().bus
         bus_collection.insert_one(docs)
         return "ADD BUS SUCESS!"

@@ -1,6 +1,54 @@
 {% extends "layout.html" %}
 {% block title %}ADD TRIP{% endblock%}
 {% block content%}
+<script>
+    $(document).ready(function (e) {
+        $('#upload').on('click', function () {
+        var form_data = new FormData();
+        var select = document.getElementById('select_bus');
+		var option = select.options[select.selectedIndex];
+        
+        form_data.append("date", $('#date').val())
+        form_data.append("time", $('#time').val())
+        form_data.append("id_bus", $('#select_bus').val())
+        form_data.append("id_trip", $('#id_trip').val())
+        
+        $.ajax({
+            url: '/add_trip_instance_post', // point to server-side URL
+            dataType: 'json', // what to expect back from server
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: form_data,
+            type: 'POST',
+            beforeSend: function(){
+            $.LoadingOverlay('show', {
+                background: 'rgba(200,200,200,0.6)',
+                textResizeFactor: 0.15
+            });
+        },
+            success: function (data) {
+                    text = data['message']
+                    Swal.fire(
+                        'สำเร็จ',
+                        text,
+                        'success'
+                    );
+            },
+            complete: () => {
+                $.LoadingOverlay('hide')
+                date = document.getElementById('date');
+                date.value = '';
+                time = document.getElementById('time');
+                time.value = '';
+                select.selectedIndex = 0
+                window.location.reload();
+            }
+        });
+    });
+    return false;
+});
+</script>
     <div class="container mt-5">
         <div class="h1 text-center">ADD DATE TIME TRIP</div>
         <div class="card mt-3">
@@ -17,18 +65,52 @@
                         <strong>ราคา {{trip.price}} บาท</strong>
                     </div>
                     <div>
-                        <input type="date" class="btn btn-outline-primary text-dark"></input>
+                        <input type="date" class="btn btn-outline-primary text-dark" id="date"></input>
                     </div>
                     <div>
-                        <input type="time" class="btn btn-outline-primary text-dark"></input>
+                        
+                        <input type="time" class="btn btn-outline-primary text-dark" id="time" ></input>
                     </div>
                     <div>
-                        <a href="/add_trip_instance" class="btn btn-primary">เพิ่มรอบการเดินทาง</a>
+                        <select class="form-select" aria-label="" id="select_bus">
+                            {% for i in buss %}
+                            <option value="{{i._id}}">{{i.bus_number}}</option>
+                            {% endfor %}
+                          </select>
+                    </div>
+                    <div>
+                        <button id="upload" class="btn btn-primary">เพิ่มรอบการเดินทาง</button>
+                        <input type="hidden" id="id_trip" value={{trip._id}}>
                     </div>
                 </div>  
             </div>
           </div>
-          <hr class="mt-5">
+          <div class="h1 mt-5 text-center">DATA</div>
+        
+          {%for i in trip_instances%}
+          <div class="card mt-3 mb-5">
+              <div class="card-header ">
+                <strong class="text-primary ">เส้นทางการเดินทาง{{i['trip'].departure_point }} - {{i['trip'].destination_point }}</strong> 
+              </div>
+              <div class="card-body">
+                  <div class="d-flex justify-content-around">
+                      <div class="">
+                              <strong>ต้นทาง: </strong>{{i['trip'].departure_station }} 
+                              <strong>-</strong>
+                              <strong>ปลายทาง: </strong>{{i['trip'].destination_station }}
+                          <br>
+                          <strong>ราคา {{i['trip'].price}} บาท</strong>
+                      </div>
+                      <div class="text-center">
+                        <strong>วันที่เดินทาง</strong><br> {{i.date_time[0:10]}}
+                      </div>
+                      <div class="text-center">
+                        <strong>เวลา</strong><br> {{i.date_time[11:]}}
+                      </div>
+                  </div>  
+              </div>
+            </div>
+          {%endfor%}
     </div>
 {% endblock %}
 

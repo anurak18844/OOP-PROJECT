@@ -11,6 +11,7 @@ from werkzeug.utils import  secure_filename
 from init_database_mongo import InitDatabaseMongoDB
 from cls_obj.bus import Bus
 from cls_obj.trip import Trip
+from cls_obj.tripinstance import TripInStance
 
 app = Flask(__name__)
 
@@ -136,9 +137,30 @@ def add_trip_instance(id_trip):
     trip_collection = InitDatabaseMongoDB().trip
     trips = trip_collection.find({"_id" : ObjectId(id_trip)})
     trip = trips[0]
-    pprint.pprint(trip)
+    bus_collection = InitDatabaseMongoDB().bus
+    id_company = trip['company']['_id']
+    buss = bus_collection.find({"owner_id" : id_company})
+    trip_instance_collecton = InitDatabaseMongoDB().trip_instance
+    trip_instances = trip_instance_collecton.find({"trip._id" : ObjectId(id_trip),'trip.company._id' : id_company})
+    # p = trip_instance_collecton.find({'trip[_id]' : '6452254fdadf26f7fccf7c74'})
+    # for i in p:
+    #     pprint.pprint(i)
+    return render_template("add_trip_instance.html", trip = trip, buss = buss, trip_instances = trip_instances)
 
-    return render_template("add_trip_instance.html", trip = trip)
+@app.route("/add_trip_instance_post", methods=['POST'])
+def add_trip_instance_post():
+    id_trip = request.form['id_trip']
+    date = request.form['date']
+    time = request.form['time']
+    id_bus = request.form['id_bus']
+    date_time = f"{date}T{time}"
+    print(id_bus)
+    trip__collection = InitDatabaseMongoDB().trip
+    trip = trip__collection.find({'_id' : ObjectId(id_trip)})
+    pprint.pprint(trip[0])
+    trip_instance = TripInStance(date_time, trip[0], id_bus)
+    return jsonify({"message" : trip_instance.insert_data()})
+
 
 @app.route("/login", methods=["POST"])
 def login():
