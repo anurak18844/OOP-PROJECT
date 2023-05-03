@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+{% block title %}ADD BUS{% endblock%}
+{% block content%}
+<script>
+            $(document).ready(function (e) {
+                $('#upload').on('click', function () {
+                var form_data = new FormData();
+                form_data.append("busnumber", $('#busnumber').val())
+                form_data.append("buscolor", $('#buscolor').val())
+                form_data.append("idcompany",  $('#idcompany').val())
+                $.ajax({
+                    url: '/add_driver',
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    data: form_data,
+                    type: 'POST',
+                    beforeSend: function(){
+                    $.LoadingOverlay('show', {
+                        background: 'rgba(200,200,200,0.6)',
+                        textResizeFactor: 0.15
+                    });
+                },
+                    success: function (data) {
+                            // text = data['message']
+                            // if(text == 'Not Have Accout'){
+                            //         Swal.fire({
+                            //         icon: 'error',
+                            //         title: 'Oops...',
+                            //         text: text
+                            //     })
+                            // }
+                            // else{
+                            //     text = data['id']
+                            //     console.log(text)
+                            //     window.location.href = '/home_company/'+text; 
+                            // }
+                            text = data['message']
+                            Swal.fire(
+                                'สำเร็จ',
+                                text,
+                                'success'
+                            );
+
+                            busnumber = document.getElementById('busnumber');
+                            busnumber.value = '';
+                            buscolor = document.getElementById('buscolor');
+                            buscolor.value = '';
+                    },
+                    complete: () => {
+                        $.LoadingOverlay('hide')
+                    }
+                });
+            });
+        });
+</script>
+    <div class="container mt-5">
+        <div class="h5 mb-5  text-center">ADD BUS</div>
+            <div class="mb-3">
+            BUS NUMBER
+            <input type="email" class="form-control" id="busnumber">
+            </div>
+            <div class="mb-3">
+            BUS COLOR
+            <input type="text" class="form-control" id="buscolor">
+            </div>
+           <div class="d-grid pt-3">
+            <button id="upload" class="btn btn-primary">ADD BUS</button>
+            <input type="hidden" id="idcompany" value={{id_company}}>
+           </div>
+    </div>
+{% endblock %}
+
+

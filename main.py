@@ -6,8 +6,10 @@ import pymongo
 import pprint
 from bson.objectid import ObjectId
 from cls_obj.company import Company
+from cls_obj.driver import Driver
 from werkzeug.utils import  secure_filename
 from init_database_mongo import InitDatabaseMongoDB
+from cls_obj.bus import Bus
 
 app = Flask(__name__)
 
@@ -49,10 +51,44 @@ def add_company():
     resp = jsonify(message)
     return resp
 
-@app.route("/home_company")
-def home_company(company):
-    pprint.pprint(company)
-    return render_template('home_company.html')
+@app.route("/home_company/<user>", methods=["GET"])
+def home_company(user):
+    a = user
+    print(a)
+    return render_template('home_company.html', id_company = a)
+
+@app.route("/add_bus/<id_company>",  methods=["GET"])
+def add_bus_page(id_company):
+    id_company = id_company
+    return render_template('add_bus_page.html',id_company = id_company)
+
+@app.route("/add_bus", methods=["POST"])
+def add_bus():
+    id_company = request.form['idcompany']
+    bus_number = request.form['busnumber']
+    bus_color = request.form['buscolor']
+    bus = Bus(bus_number, bus_color, id_company)
+    message = {"message" : bus.insert_data()}
+    resp = jsonify(message)
+    return resp
+
+@app.route("/add_driver/<id_company>",  methods=["GET"])
+def add_driver_page(id_company):
+    id_company = id_company
+    return render_template('add_driver_page.html',id_company = id_company)
+
+@app.route("/add_driver", methods=["POST"])
+def add_driver():
+    id_company = request.form['idcompany']
+    bus_number = request.form['busnumber']
+    fullname = request.form['fullname']
+    email = request.form['email']
+    password = request.form['password']
+    phone = request.form['phone']
+    driver = Driver(email, phone, password, fullname, 3, bus_number)
+    message = {"message" : driver.insert_data()}
+    resp = jsonify(message)
+    return resp
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -65,10 +101,11 @@ def login():
         return resp
     company = company_collection.find({"email" : email, "password" : password})
     print('------------------------------------------')
-    a = company[0]
+    id = str(company[0]['_id'])
     print('------------------------------------------')
     # return render_template('home_company.html', current_user = a)
-    return home_company(a)
+    resp = jsonify({"id" : id})
+    return resp
 
 @app.route("/login_page")
 def login_page():

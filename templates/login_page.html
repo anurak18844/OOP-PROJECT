@@ -29,6 +29,11 @@
                                     text: text
                                 })
                             }
+                            else{
+                                text = data['id']
+                                console.log(text)
+                                window.location.href = '/home_company/'+text; 
+                            }
                     },
                     complete: () => {
                         $.LoadingOverlay('hide')
@@ -38,7 +43,7 @@
         });
 </script>
     <div class="container mt-5">
-        <div class="h5 mb-5  text-center">ADD COMPANY</div>
+        <div class="h5 mb-5  text-center">LOGIN</div>
             <div class="mb-3">
             Email address
             <input type="email" class="form-control" id="email">
@@ -48,7 +53,7 @@
             <input type="password" class="form-control" id="password">
             </div>
            <div class="d-grid pt-3">
-            <button id="upload" class="btn btn-primary">ADD COMPANY</button>
+            <button id="upload" class="btn btn-primary">LOGIN</button>
            </div>
     </div>
 {% endblock %}

@@ -1,7 +1,4 @@
 from cls_old.userType import UserType
-from cryptograph import Cryptograph
-from cryptography.fernet import Fernet
-fernet = Fernet(Fernet.generate_key())
 class Account():
     def __init__(self, email, phone, password, full_name, user_type):
         self.__id = None
@@ -55,11 +52,6 @@ class Account():
     def user_type(self, new_user_type):
         self.__user_type = UserType(new_user_type).name
 
-    def get_encrypt(self, message):
-        return fernet.encrypt(message.encode())
-
-    def get_decrypt(self, message):
-        return fernet.decrypt(message).decode()
 
     def __str__(self):
         return f"email : {self.__email}, phone : {self.__phone}, password : {self.__password}, first_name : {self.__first_name}, last_name : {self.__last_name}, user_type : {self.__user_type}"
