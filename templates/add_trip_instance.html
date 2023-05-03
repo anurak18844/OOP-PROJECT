@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block title %}ADD TRIP{% endblock%}
+{% block content%}
+    <div class="container mt-5">
+        <div class="h1 text-center">ADD DATE TIME TRIP</div>
+        <div class="card mt-3">
+            <div class="card-header">
+              <strong class="text-primary">เส้นทางการเดินทาง{{trip.departure_point }} - {{trip.destination_point }}</strong> 
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                            <strong>ต้นทาง: </strong>{{trip.departure_station }} 
+                            <strong>-</strong>
+                            <strong>ปลายทาง: </strong>{{trip.destination_station }}
+                        <br>
+                        <strong>ราคา {{trip.price}} บาท</strong>
+                    </div>
+                    <div>
+                        <input type="date" class="btn btn-outline-primary text-dark"></input>
+                    </div>
+                    <div>
+                        <input type="time" class="btn btn-outline-primary text-dark"></input>
+                    </div>
+                    <div>
+                        <a href="/add_trip_instance" class="btn btn-primary">เพิ่มรอบการเดินทาง</a>
+                    </div>
+                </div>  
+            </div>
+          </div>
+          <hr class="mt-5">
+    </div>
+{% endblock %}
+
+
+
+
+

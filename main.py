@@ -10,6 +10,7 @@ from cls_obj.driver import Driver
 from werkzeug.utils import  secure_filename
 from init_database_mongo import InitDatabaseMongoDB
 from cls_obj.bus import Bus
+from cls_obj.trip import Trip
 
 app = Flask(__name__)
 
@@ -53,14 +54,46 @@ def add_company():
 
 @app.route("/home_company/<user>", methods=["GET"])
 def home_company(user):
-    a = user
-    print(a)
-    return render_template('home_company.html', id_company = a)
+    id = user
+    print("_id", id)
+    company_collection = InitDatabaseMongoDB().company
+    company = company_collection.find({"_id": ObjectId(id)})
+    for i in company:
+        pprint.pprint(i['email'])
+    # FIND IN DATABASE
+    # COMOANY = OBJECT FIND FROM DATABASE
+    return render_template('home_company.html', id_company = id)
+    # return render_template('add_driver_page.html',id_company = id_company, company = COMPANY)
 
 @app.route("/add_bus/<id_company>",  methods=["GET"])
 def add_bus_page(id_company):
     id_company = id_company
     return render_template('add_bus_page.html',id_company = id_company)
+
+@app.route("/add_trip/<id_company>", methods=['GET'])
+def add_trip_page(id_company):
+    id_company = id_company
+    return render_template('add_trip_page.html', id_company = id_company)
+
+@app.route("/add_trip", methods=['POST'])
+def add_trip():
+    id_company = request.form['idcompany']
+    price = request.form['price']
+    departure_point = request.form['departure_point']
+    destination_point = request.form['destination_point']
+    departure_station = request.form['departure_station']
+    destination_station = request.form['destination_station']
+    company_collection = InitDatabaseMongoDB().company
+    companies = company_collection.find({"_id": ObjectId(id_company)})
+    company = {
+        "_id": str(companies[0]["_id"]),
+        "phone": companies[0]['phone'],
+        "img":companies[0]['img'],
+        "company_name": companies[0]['company_name'],
+    }
+    trip = Trip(price, departure_point, destination_point, departure_station, destination_station, company)
+    message = trip.insert_data()
+    return jsonify({"message": message})
 
 @app.route("/add_bus", methods=["POST"])
 def add_bus():
@@ -89,6 +122,23 @@ def add_driver():
     message = {"message" : driver.insert_data()}
     resp = jsonify(message)
     return resp
+
+@app.route("/add_trip_instance_page/<id_company>",  methods=["GET"])
+def add_trip_instance_page(id_company):
+    id_company = id_company
+    trip_collection = InitDatabaseMongoDB().trip
+    trips = trip_collection.find({"company._id" : id_company})
+    return render_template('add_trip_instance_page.html',trips = trips)
+
+@app.route("/add_trip_instance/<id_trip>", methods=["GET"])
+def add_trip_instance(id_trip):
+    id_trip = id_trip
+    trip_collection = InitDatabaseMongoDB().trip
+    trips = trip_collection.find({"_id" : ObjectId(id_trip)})
+    trip = trips[0]
+    pprint.pprint(trip)
+
+    return render_template("add_trip_instance.html", trip = trip)
 
 @app.route("/login", methods=["POST"])
 def login():

@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block title %}ADD TRIP{% endblock%}
+{% block content%}
+    <div class="container mt-5">
+        <div class="h1 text-center">ADD TRIP INSTANCE</div>
+        {%for i in trips%}
+        <div class="card mt-3">
+            <div class="card-header">
+              <strong class="text-primary">เส้นทางการเดินทาง{{i.departure_point }} - {{i.destination_point }}</strong> 
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div class="">
+                            <strong>ต้นทาง: </strong>{{i.departure_station }} 
+                            <strong>-</strong>
+                            <strong>ปลายทาง: </strong>{{i.destination_station }}
+                        <br>
+                        <strong>ราคา {{i.price}} บาท</strong>
+                    </div>
+                    <div>
+                        <a href="/add_trip_instance/{{i._id}}" class="btn btn-primary">เพิ่มรอบการเดินทาง</a>
+                    </div>
+                </div>  
+            </div>
+          </div>
+        {%endfor%}
+    </div>
+{% endblock %}
+
+
+
+
+

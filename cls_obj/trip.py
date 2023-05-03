@@ -1,10 +1,14 @@
+import sys
+sys.path.append("../init_database_mongo.py") 
+from init_database_mongo import InitDatabaseMongoDB
 class Trip:
-    def __init__(self, price, departure_point, destination_pont, rebate_percentage, company):
+    def __init__(self, price, departure_point, destination_point, departure_point_station, destination_point_station,company):
         self.__id = None
         self.__price = price
         self.__departure_point = departure_point
-        self.__destination_pont = destination_pont
-        self.__rebate_percentage = rebate_percentage
+        self.__destination_point = destination_point
+        self.__departure_point_station = departure_point_station
+        self.__destination_point_station = destination_point_station
         self.__company = company
 
     @property
@@ -32,20 +36,44 @@ class Trip:
         self.__departure_point = new_departure_point
     
     @property
-    def destination_pont(self):
-        return self.__destination_pont
+    def destination_point(self):
+        return self.__destination_point
     
-    @destination_pont.setter
-    def destination_pont(self, new_destination_pont):
-        self.__destination_pont = new_destination_pont
+    @destination_point.setter
+    def destination_point(self, new_destination_pont):
+        self.__destination_point = new_destination_pont
 
     @property
-    def rebate_percentage(self):
-        return self.__rebate_percentage
+    def departure_point_station(self):
+        return self.__departure_point_station
     
-    @rebate_percentage.setter
-    def rebate_percentage(self, new_rebate_percentage):
-        self.__rebate_percentage = new_rebate_percentage
+    @property
+    def destination_point_station(self):
+        return self.__destination_point_station
+    
+    @departure_point_station.setter
+    def departure_point_station(self, new_departure_point_station):
+        self.__departure_point_station = new_departure_point_station
 
-    def __str__(self):
-        return f"sprice : {self.__price}\ndeparture_point : {self.__departure_point}\nrebate_percentage : {self.__rebate_percentage}\ncompany : {self.__company}\n"
+    @destination_point_station.setter
+    def destination_point_station(self, new_destination_station):
+        self.__destination_point_station = new_destination_station
+
+    def create_docs(self):
+        docs = {
+            "price" : self.__price,
+            "departure_point": self.__departure_point,
+            "destination_point": self.__destination_point,
+            "departure_station": self.__departure_point_station,
+            "destination_station": self.__destination_point_station,
+            "company": self.__company
+        }
+
+        return docs
+    
+    def insert_data(self):
+        docs = self.create_docs()
+        trip_collection = InitDatabaseMongoDB().trip
+        trip_collection.insert_one(docs)
+
+        return "INSERT TRIP SUCCESS"
