@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+{% block title %}SELECT TRIP{% endblock%}
+{% block content%}
+<nav class="navbar navbar-expand-lg navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand">BUS Online Ticket</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="d-flex justify-content-end">
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Anurak</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">HOME</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/registor">LOG OUT</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+<div class="container mt-5">
+    <div class="h1 text-center">SELECT TRIP</div>
+    {%for i in trip_instances%}
+    <div class="card mt-3">
+        <div class="card-header">
+            <strong class="text-primary">เส้นทางการเดินทาง {{i.trip.departure_point }} - {{i.trip.destination_point
+                }}</strong>
+        </div>
+        <div class="card-body">
+            <div class="d-flex justify-content-around">
+                <div class="text-center">
+                    <div class="row">
+                        <div class="col">
+                            <img src="{{ url_for('static', filename = 'uploads/'+i.trip.company.img) }}"
+                                style="width: 100px;height: 50px;">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <strong>{{i.trip.company.company_name}}</strong>
+                        </div>
+                    </div>
+                    
+                </div>
+
+                <div class="text-center">
+                    เวลาออกเดินทาง
+                    <div class="h3 mt-1">{{i.time}}</div>
+                </div>
+
+                <div class="text-center">
+                    สถานีขึ้น-ลง
+                    <ul>
+                        <li><strong>ต้นทาง : </strong>{{i.trip.departure_station }}</li>
+                        <li><strong>ปลายทาง : </strong>{{i.trip.destination_station }}</li>
+                    </ul>
+                </div>
+                
+                <div class="text-center">
+                    ราคา
+                   <div class="h3">THB {{i.trip.price}}</div>
+                </div>
+                <div>
+                    <a href="/select_seat/{{user_id}}/{{i._id}}" class="btn btn-primary mt-3" style="width: 150px;">เลือก</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {%endfor%}
+</div>
+{% endblock %}

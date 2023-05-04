@@ -1,0 +1,119 @@
+{% extends "layout.html" %}
+{% block title %}ADD TRIP{% endblock%}
+{% block content%}
+<style>
+    .rotate-font{
+        -webkit-transform: rotate(90deg); 
+        -moz-transform: rotate(90deg);  
+        -ms-transform: rotate(90deg);  
+        -o-transform: rotate(90deg);  
+        transform: rotate(90deg);
+    }
+    .rotate-back{
+        -webkit-transform: rotate(270deg); 
+        -moz-transform: rotate(270deg);  
+        -ms-transform: rotate(270deg);  
+        -o-transform: rotate(270deg);  
+        transform: rotate(270deg);
+    }
+</style>
+<script>
+    $(document).ready(function (e) {
+        $('#upload').on('click', function () {
+            $.LoadingOverlay('show', {
+                        background: 'rgba(200,200,200,0.6)',
+                        textResizeFactor: 0.15
+            });
+            window.location.reload();
+        });
+
+
+        $('#reset').on('click', function () {
+            $.LoadingOverlay('show', {
+                        background: 'rgba(200,200,200,0.6)',
+                        textResizeFactor: 0.15
+            });
+            window.location.reload();
+        });
+        {% for i in list_seates %}
+        $('#button{{i}}').on('click', function () {
+            button = document.querySelector('#button{{i}}');
+            button.disabled = true;
+            var fired_button = $(this).val();
+            a = document.getElementById("a").innerText
+            if(a == 'ยังไม่มีรายการที่ท่านเลือก'){
+                document.getElementById("a").innerText = fired_button
+            }
+            else{
+                txt = document.getElementById("a").innerText
+                document.getElementById("a").innerText = txt +',' + fired_button
+            }
+
+            // document.getElementById("a").innerText = "Welcome to JavaScript";
+        });
+        {% endfor %}
+    
+    // return false;
+});
+
+</script>
+<!-- price, departure_point, destination_point, departure_point_station, destination_point_station,company -->
+<nav class="navbar navbar-expand-lg navbar navbar-dark bg-dark">
+   
+    <div class="container-fluid">
+        <a class="navbar-brand">BUS Online Ticket</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="d-flex justify-content-end">
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Anurak</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">HOME</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/registor">LOG OUT</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+    <div class="container mt-5">
+        <div class="h5 mb-5  text-center">ADD TRIP</div>
+        <div class="text-center">เลือกที่นั่ง :  <span name="a" id="a">ยังไม่มีรายการที่ท่านเลือก</span></div>
+        <div class="text-center mt-5">
+            <button id="reset" class="btn btn-primary me-2">ยกเลิกการเลือกทั้งหมด</button>
+            <button id="upload" class="btn btn-primary" style="width: 200px;">ยืนยัน</button></div>
+        <div class="d-flex justify-content-start">
+            <div class="rotate-font mt-5 p-2">
+                <button type="button" class="btn btn-secondary" style="height: 60px; width: 240px;">หน้ารถ</button>
+            </div>
+            <div class="p-2">
+                <div class="mt-5">
+                    {% for i in list_seates %}
+                    {% if i in list_seates_from_ticket %}
+                    <button type="button" class="btn btn-secondary" style="width: 70px;" disabled>{{i}}</button>
+                    {% else %}
+                    <button type="button" id="button{{i}}" class="btn btn-outline-primary" style="width: 70px;" value="{{i}}">{{i}}</button>
+                    {% endif %}
+                    {% if i[1:] == '10'%}
+                    <br><br>
+                    {% endif %}
+                    {% endfor %}
+                </div> 
+            </div>
+            <!-- <div class="rotate-font mt-5 p-2">
+                <button type="button" class="btn btn-secondary" style="height: 70px; width: 240px;">หน้ารถ</button>
+            </div> -->
+        </div>
+    </div>
+{% endblock %}
+
+
+
+
+

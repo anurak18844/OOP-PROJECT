@@ -213,7 +213,57 @@ def home_user(user):
         destination_point.append(trip['destination_point'])
     print(departure_point)
     print(destination_point)
-    return render_template('home_user_page.html', id_company = id, departure_point = departure_point, destination_point = destination_point)
+    return render_template('home_user_page.html', user_id = id, departure_point = departure_point, destination_point = destination_point)
+
+@app.route('/search_trip_instance', methods=['POST'])
+def search_trip_instance():
+    departure_point = request.form['departure_point']
+    destination_point = request.form['destination_point']
+    date = request.form['date']
+    trip_instance_collecntion = InitDatabaseMongoDB().trip_instance
+    # count_accout = caccount_collection.find({"email" : email, "password" : password}).count()
+    count_trip_instance = trip_instance_collecntion.find({"trip.departure_point" : departure_point, "trip.destination_point" : destination_point, "date" : date}).count()
+    if count_trip_instance == 0:
+        return jsonify({'count' : count_trip_instance, 'message' : 'ไม่พบข้อมูลการเดินทางที่ท่านต้องการ'})
+    
+    path = f"{departure_point}/{destination_point}/{date}"
+    return jsonify({"path" : path})
+
+@app.route('/<user_id>/searched_trip_instance/<departure_point>/<destination_point>/<date>', methods=['GET'])
+def searhed_trip_instance(user_id, departure_point, destination_point, date):
+    user_id = user_id
+    departure_point = departure_point
+    destination_point = destination_point
+    date = date
+    trip_instance_collecntion = InitDatabaseMongoDB().trip_instance
+    trip_instances = trip_instance_collecntion.find({"trip.departure_point" : departure_point, "trip.destination_point" : destination_point, "date" : date})
+    return render_template("select_trip_instance.html",trip_instances = trip_instances, user_id = user_id)
+
+@app.route('/select_seat/<user_id>/<trip_instance_id>', methods=['GET'])
+def select_seat_page(user_id, trip_instance_id):
+    user_id = user_id
+    trip_instance_id = trip_instance_id
+    trip_instance_collection = InitDatabaseMongoDB().trip_instance
+    trips = trip_instance_collection.find({'_id': ObjectId(trip_instance_id)})
+    trip = trips[0]
+    bus_collection = InitDatabaseMongoDB().bus
+    buss = bus_collection.find({"_id":ObjectId(trip['id_bus'])})
+    bus = buss[0]
+    list_seates = bus['seats']
+     # TEST INSERT TICKET
+    ticket_collection = InitDatabaseMongoDB().ticket
+    # ticket_collection.insert_one({'seat' : 'A1', 'trip_instance' : trip})
+     # TEST INSERT TICKET
+    print(trip_instance_id)
+    tickets = ticket_collection.find({"trip_instance._id" : ObjectId(trip_instance_id)})
+    list_seates_from_ticket = []
+    for i in tickets:
+        list_seates_from_ticket.append(i['seat'])
+
+    for i in list_seates:
+        if i in list_seates_from_ticket:
+            print(i)
+    return render_template('select_seate_page.html',user_id = user_id, trip_instance_id = trip_instance_id, list_seates = list_seates, list_seates_from_ticket = list_seates_from_ticket)
 
 @app.route("/login_page")
 def login_page():

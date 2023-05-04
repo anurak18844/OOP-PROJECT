@@ -51,6 +51,29 @@
             });
         });
 </script>
+<nav class="navbar navbar-expand-lg navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand">BUS Online Ticket</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="d-flex justify-content-end">
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">HOME</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login_page">LOGIN</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register_page">REGISTER</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
     <div class="container mt-5">
         <div class="h5 mb-5  text-center">LOGIN</div>
             <div class="mb-3">
@@ -62,7 +85,7 @@
             <input type="password" class="form-control" id="password">
             </div>
            <div class="d-grid pt-3">
-            <button id="upload" class="btn btn-primary">LOGIN</button>
+            <button id="upload" class="btn btn-primary">LOG IN</button>
            </div>
     </div>
 {% endblock %}

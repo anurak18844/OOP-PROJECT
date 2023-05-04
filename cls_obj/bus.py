@@ -53,7 +53,7 @@ class Bus():
         return f"bus_number : {self.__bus_number}, color : {self.__color}, owener_id : {self.__owner_id}"
     
     def create_docs(self):
-        text = ['A', 'B', 'C']
+        text = ['A', 'B', 'C', 'D']
         for i in text:
             for j in range(1,11):
                 txt = f"{i}{j}"
