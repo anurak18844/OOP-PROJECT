@@ -31,8 +31,17 @@
                             }
                             else{
                                 text = data['id']
-                                console.log(text)
-                                window.location.href = '/home_company/'+text; 
+                                user_type = data['user_type']
+                                if(user_type == 'company'){
+                                    window.location.href = '/home_company/'+text; 
+                                }
+                                else if(user_type == 'user'){
+                                    window.location.href = '/home_user/'+text; 
+                                }
+                                else{
+                                    window.location.href = '/add_company'; 
+                                }
+                                
                             }
                     },
                     complete: () => {

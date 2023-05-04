@@ -1,4 +1,4 @@
-from cls_old.userType import UserType
+from .userType import UserType
 from cryptography.fernet import Fernet
 
 class Account():
@@ -47,7 +47,7 @@ class Account():
         self.__password = new_password
 
     @fullname.setter
-    def full_name(self, new_fullname):
+    def fullname(self, new_fullname):
         self.__fullname = new_fullname
 
     @user_type.setter

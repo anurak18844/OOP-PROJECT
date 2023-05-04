@@ -30,6 +30,6 @@ class Driver(Account):
     
     def insert_data(self):
         docs = self.create_docs()
-        bus_collection = InitDatabaseMongoDB().driver
+        bus_collection = InitDatabaseMongoDB().account
         bus_collection.insert_one(docs)
         return "ADD DRIVER SUCESS!"

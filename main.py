@@ -12,6 +12,7 @@ from init_database_mongo import InitDatabaseMongoDB
 from cls_obj.bus import Bus
 from cls_obj.trip import Trip
 from cls_obj.tripinstance import TripInStance
+from cls_obj.user import User
 
 app = Flask(__name__)
 
@@ -57,14 +58,9 @@ def add_company():
 def home_company(user):
     id = user
     print("_id", id)
-    company_collection = InitDatabaseMongoDB().company
+    company_collection = InitDatabaseMongoDB().account
     company = company_collection.find({"_id": ObjectId(id)})
-    for i in company:
-        pprint.pprint(i['email'])
-    # FIND IN DATABASE
-    # COMOANY = OBJECT FIND FROM DATABASE
     return render_template('home_company.html', id_company = id)
-    # return render_template('add_driver_page.html',id_company = id_company, company = COMPANY)
 
 @app.route("/add_bus/<id_company>",  methods=["GET"])
 def add_bus_page(id_company):
@@ -84,8 +80,9 @@ def add_trip():
     destination_point = request.form['destination_point']
     departure_station = request.form['departure_station']
     destination_station = request.form['destination_station']
-    company_collection = InitDatabaseMongoDB().company
+    company_collection = InitDatabaseMongoDB().account
     companies = company_collection.find({"_id": ObjectId(id_company)})
+    
     company = {
         "_id": str(companies[0]["_id"]),
         "phone": companies[0]['phone'],
@@ -109,12 +106,15 @@ def add_bus():
 @app.route("/add_driver/<id_company>",  methods=["GET"])
 def add_driver_page(id_company):
     id_company = id_company
-    return render_template('add_driver_page.html',id_company = id_company)
+    bus_collection = InitDatabaseMongoDB().bus
+    bus = bus_collection.find({"owner_id": id_company})
+    return render_template('add_driver_page.html',id_company = id_company, bus = bus)
 
 @app.route("/add_driver", methods=["POST"])
 def add_driver():
     id_company = request.form['idcompany']
     bus_number = request.form['busnumber']
+    print("busnumber is ", bus_number)
     fullname = request.form['fullname']
     email = request.form['email']
     password = request.form['password']
@@ -153,12 +153,11 @@ def add_trip_instance_post():
     date = request.form['date']
     time = request.form['time']
     id_bus = request.form['id_bus']
-    date_time = f"{date}T{time}"
     print(id_bus)
     trip__collection = InitDatabaseMongoDB().trip
     trip = trip__collection.find({'_id' : ObjectId(id_trip)})
     pprint.pprint(trip[0])
-    trip_instance = TripInStance(date_time, trip[0], id_bus)
+    trip_instance = TripInStance(date, time, trip[0], id_bus)
     return jsonify({"message" : trip_instance.insert_data()})
 
 
@@ -166,22 +165,60 @@ def add_trip_instance_post():
 def login():
     email = request.form['email']
     password = request.form['password']
-    company_collection = InitDatabaseMongoDB().company
-    count_accout = company_collection.find({"email" : email, "password" : password}).count()
+    caccount_collection = InitDatabaseMongoDB().account
+    count_accout = caccount_collection.find({"email" : email, "password" : password}).count()
     if count_accout == 0:
         resp = jsonify({"message":"Not Have Accout"})
         return resp
-    company = company_collection.find({"email" : email, "password" : password})
+    account = caccount_collection.find({"email" : email, "password" : password})
     print('------------------------------------------')
-    id = str(company[0]['_id'])
+    id = str(account[0]['_id'])
+    user_type = account[0]['user_type']
     print('------------------------------------------')
-    # return render_template('home_company.html', current_user = a)
-    resp = jsonify({"id" : id})
+    resp = jsonify({"id" : id, "user_type" : user_type})
     return resp
+
+@app.route('/register_page')
+def register_page():
+    return render_template("register_page.html")
+
+@app.route('/register', methods=['POST'])
+def register():
+    email = request.form['email']
+    password = request.form['password']
+    phone = request.form['phone']
+    name = request.form['name']
+    lastname = request.form['lastname']
+    full_name = f"{name} {lastname}"
+    user = User(email, phone, password, full_name, 4)
+    count_email = user.check_count_email()
+    if count_email > 0 :
+        message = {"message":"Email Not Unique"}
+        resp = jsonify(message)
+        return resp
+    
+    message = {"message" : user.insert_data()}
+    resp = jsonify(message)
+    return resp
+
+@app.route("/home_user/<user>", methods=["GET"])
+def home_user(user):
+    id = user
+    trip_collection = InitDatabaseMongoDB().trip
+    trips = trip_collection.find()
+    departure_point = []
+    destination_point = []
+    for trip in trips:
+        departure_point.append(trip['departure_point'])
+        destination_point.append(trip['destination_point'])
+    print(departure_point)
+    print(destination_point)
+    return render_template('home_user_page.html', id_company = id, departure_point = departure_point, destination_point = destination_point)
 
 @app.route("/login_page")
 def login_page():
     return render_template('login_page.html')
+
 
 if __name__ == "__main__":
     app.run(debug=True)

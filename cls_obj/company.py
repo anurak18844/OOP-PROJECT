@@ -22,7 +22,7 @@ class Company(Account):
         return f"email : {self.__email}, phone : {self.__phone}, password : {self.__password}, fullname: {self.__fullname},user_type : {self.__user_type}, img : {self.__img}"
     
     def check_count_email(self):
-        company_collection = InitDatabaseMongoDB().company
+        company_collection = InitDatabaseMongoDB().account
         count = company_collection.find({"email" : self.email}).count()
         print(count)
         return count
@@ -40,7 +40,7 @@ class Company(Account):
     
     def insert_data(self):
         company_docs = self.create_company_docs()
-        company_collection = InitDatabaseMongoDB().company
+        company_collection = InitDatabaseMongoDB().account
         company_collection.insert_one(company_docs)
         return "ADD COMPANY SUCESS!"
         

@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+{% block title %}ADD TRIP{% endblock%}
+{% block content%}
+<script>
+            $(document).ready(function (e) {
+                $('#upload').on('click', function () {
+                var form_data = new FormData();
+                form_data.append("idcompany",  $('#idcompany').val())
+                form_data.append("departure_point",  $('#departure_point').val())
+                form_data.append("destination_point",  $('#destination_point').val())
+                form_data.append("departure_station",  $('#departure_station').val())
+                form_data.append("destination_station",  $('#destination_station').val())
+                form_data.append("price",  $('#price').val())
+                $.ajax({
+                    url: '/add_trip', // point to server-side URL
+                    dataType: 'json', // what to expect back from server
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    data: form_data,
+                    type: 'POST',
+                    beforeSend: function(){
+                    $.LoadingOverlay('show', {
+                        background: 'rgba(200,200,200,0.6)',
+                        textResizeFactor: 0.15
+                    });
+                },
+                    success: function (data) {
+                            text = data['message']
+                            Swal.fire(
+                                'สำเร็จ',
+                                text,
+                                'success'
+                            );
+                    },
+                    complete: () => {
+                        $.LoadingOverlay('hide')
+
+                        departure_point = document.getElementById('departure_point');
+                        departure_point.value = '';
+
+                        destination_point = document.getElementById('destination_point');
+                        destination_point.value = '';
+
+                        departure_station = document.getElementById('departure_station');
+                        departure_station.value = '';
+
+                        
+                        destination_station = document.getElementById('destination_station');
+                        destination_station.value = '';
+
+                        price = document.getElementById('price');
+                        price.value = '';
+                    }
+                });
+            });
+            return false;
+        });
+
+</script>
+<!-- price, departure_point, destination_point, departure_point_station, destination_point_station,company -->
+    <div class="container mt-5">
+        <div class="h5 mb-5  text-center">ค้นหาการเดินทาง</div>
+            <div class="row text-center">
+                <div class="col">
+                <p class="mb-3">ต้นทาง</p>
+                <select class="form-select" aria-label="" id="select_departure_point">
+                    {% for i in departure_point %}
+                    <option value="{{i}}">{{i}}</option>
+                    {% endfor %}
+                </select>
+                </div>
+                <div class="col">
+                <p class="mb-3">ปลายทาง</p>
+                <select class="form-select" aria-label="" id="select_destination_point">
+                    {% for i in destination_point %}
+                    <option value="{{i}}">{{i}}</option>
+                    {% endfor %}
+                </select>
+                </div>
+                <div class="col">
+                <p class="mb-3">วันที่เดินทาง</p>
+                <input type="date" class="form-control" id="departure_point">
+                </div>
+            </div>
+           
+           <div class="d-grid pt-3">
+            <button id="upload" class="btn btn-primary">ค้นหา</button>
+            <input type="hidden" id="idcompany" value={{id_company}}>
+           </div>
+    </div>
+{% endblock %}
+
+
+
+
+

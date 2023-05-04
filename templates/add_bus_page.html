@@ -5,11 +5,14 @@
             $(document).ready(function (e) {
                 $('#upload').on('click', function () {
                 var form_data = new FormData();
+
+                var select = document.getElementById('buscolor');
+		        var option = select.options[select.selectedIndex];
                 form_data.append("busnumber", $('#busnumber').val())
                 form_data.append("buscolor", $('#buscolor').val())
                 form_data.append("idcompany",  $('#idcompany').val())
                 $.ajax({
-                    url: '/add_driver',
+                    url: '/add_bus',
                     cache: false,
                     contentType: false,
                     processData: false,
@@ -44,8 +47,7 @@
 
                             busnumber = document.getElementById('busnumber');
                             busnumber.value = '';
-                            buscolor = document.getElementById('buscolor');
-                            buscolor.value = '';
+                            select.selectedIndex = 0
                     },
                     complete: () => {
                         $.LoadingOverlay('hide')
@@ -62,7 +64,18 @@
             </div>
             <div class="mb-3">
             BUS COLOR
-            <input type="text" class="form-control" id="buscolor">
+            <!-- <input type="text" class="form-control" id="buscolor"> -->
+            <select class="form-select" aria-label="" id="buscolor">
+                <option value="แดง">แดง</option>
+                <option value="ฟ้า">ฟ้า</option>
+                <option value="เขียว">เขียว</option>
+                <option value="น้ำเงิน">น้ำเงิน</option>
+                <option value="ดำ">ดำ</option>
+                <option value="ขาว">ขาว</option>
+                <option value="เหลือง">เหลือง</option>
+                <option value="ม่วง">ม่วง</option>
+                <option value="ส้ม">ส้ม</option>
+            </select>
             </div>
            <div class="d-grid pt-3">
             <button id="upload" class="btn btn-primary">ADD BUS</button>

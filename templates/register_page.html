@@ -1,22 +1,17 @@
 {% extends "layout.html" %}
-{% block title %}ADD DRIVER{% endblock%}
+{% block title %}REGISTER{% endblock%}
 {% block content%}
 <script>
             $(document).ready(function (e) {
                 $('#upload').on('click', function () {
                 var form_data = new FormData();
-
-                var select = document.getElementById('busnumber');
-		        var option = select.options[select.selectedIndex];
-                
                 form_data.append("email", $('#email').val())
                 form_data.append("password", $('#password').val())
                 form_data.append("phone", $('#phone').val())
-                form_data.append("fullname", $('#fullname').val())
-                form_data.append("busnumber", $('#busnumber').val())
-                form_data.append("idcompany",  $('#idcompany').val())
+                form_data.append("name", $('#name').val())
+                form_data.append("lastname", $('#lastname').val())
                 $.ajax({
-                    url: '/add_driver', // point to server-side URL
+                    url: '/register', // point to server-side URL
                     dataType: 'json', // what to expect back from server
                     cache: false,
                     contentType: false,
@@ -30,29 +25,41 @@
                     });
                 },
                     success: function (data) {
+                        if(data['message'] == "Email Not Unique"){
+                            text = data['message']
+                            $.LoadingOverlay('hide')
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: text
+                            })
+                        }
+                        else{
                             text = data['message']
                             Swal.fire(
                                 'สำเร็จ',
-                                text,
+                                text + "<br>",
                                 'success'
                             );
+
+                            email = document.getElementById('email');
+                            email.value = '';
+
+                            password = document.getElementById('password');
+                            password.value = '';
+
+                            phone = document.getElementById('phone')
+                            phone.value = '';
+
+                            name = document.getElementById('name');
+                            name.value = '';
+
+                            lastname = document.getElementById('lastname');
+                            lastname.value = '';
+                        }
                     },
                     complete: () => {
                         $.LoadingOverlay('hide')
-
-                        email = document.getElementById('email');
-                        email.value = '';
-
-                        select.selectedIndex = 0
-
-                        password = document.getElementById('password');
-                        password.value = '';
-
-                        phone = document.getElementById('phone');
-                        phone.value = '';
-
-                        fullname = document.getElementById('fullname');
-                        fullname.value = '';
                     }
                 });
             });
@@ -61,7 +68,7 @@
 
 </script>
     <div class="container mt-5">
-        <div class="h5 mb-5  text-center">ADD DRIVER</div>
+        <div class="h5 mb-5  text-center">RIGISTER</div>
         <!-- <form action="POST"> -->
             <div class="mb-3">
             Email address
@@ -76,27 +83,19 @@
             <input type="text" class="form-control" id="phone">
            </div>
            <div class="mb-3">
-            Full Name
-            <input type="text" class="form-control" id="fullname">
+            Name
+            <input type="text" class="form-control" id="name">
            </div>
            <div class="mb-3">
-            Bus Number 
-            <select class="form-select" aria-label="" id="busnumber">
-                {% for i in bus %}
-                <option value="{{i.bus_number}}">{{i.bus_number}}</option>
-                {% endfor %}
-            </select>
+            Lastname
+            <input type="text" class="form-control" id="lastname">
            </div>
            <div class="d-grid pt-3">
             <!-- <input type="submit" class="btn btn-primary" value="ADD COMPANY"></input> -->
-            <button id="upload" class="btn btn-primary">ADD DRIVER</button>
-            <input type="hidden" id="idcompany" value={{id_company}}>
+            <button id="upload" class="btn btn-primary">REGISTER</button>
            </div>
           <!-- </form> -->
     </div>
 {% endblock %}
-
-
-
 
 

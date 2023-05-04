@@ -76,7 +76,7 @@
                             {% for i in buss %}
                             <option value="{{i._id}}">{{i.bus_number}}</option>
                             {% endfor %}
-                          </select>
+                        </select>
                     </div>
                     <div>
                         <button id="upload" class="btn btn-primary">เพิ่มรอบการเดินทาง</button>
@@ -102,10 +102,10 @@
                           <strong>ราคา {{i['trip'].price}} บาท</strong>
                       </div>
                       <div class="text-center">
-                        <strong>วันที่เดินทาง</strong><br> {{i.date_time[0:10]}}
+                        <strong>วันที่เดินทาง</strong><br> {{i.date}}
                       </div>
                       <div class="text-center">
-                        <strong>เวลา</strong><br> {{i.date_time[11:]}}
+                        <strong>เวลา</strong><br> {{i.time}}
                       </div>
                   </div>  
               </div>

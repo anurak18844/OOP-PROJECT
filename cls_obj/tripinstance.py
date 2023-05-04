@@ -2,10 +2,11 @@ import sys
 sys.path.append("../init_database_mongo.py") 
 from init_database_mongo import InitDatabaseMongoDB
 class TripInStance:
-    def __init__(self, date_time, trip,id_bus):
+    def __init__(self, date, time, trip,id_bus):
         self.__id = None
         self.__trip = trip
-        self.__date_time = date_time
+        self.__date = date
+        self.__time = time
         self.__id_bus= id_bus
 
     @property
@@ -17,8 +18,12 @@ class TripInStance:
         return self.__trip
         
     @property
-    def date_time(self):
-        return self.__date_time
+    def date(self):
+        return self.__date
+    
+    @property
+    def time(self):
+        return self.__time
     
     @property
     def id_bus(self):
@@ -32,9 +37,13 @@ class TripInStance:
     def trip(self, trip):
         self.__trip = trip
 
-    @date_time.setter
-    def date_time(self, date_time):
-        self.__date_time = date_time
+    @date.setter
+    def date(self, date):
+        self.__date = date
+
+    @time.setter
+    def time(self, time):
+        self.__time = time
 
     @id_bus.setter
     def id_bus(self, id_bus):
@@ -42,7 +51,8 @@ class TripInStance:
 
     def create_docs(self):
         docs = {
-            "date_time": self.__date_time,
+            "date": self.__date,
+            "time": self.__time,
             "id_bus": self.__id_bus,
             "trip": self.__trip
         }
