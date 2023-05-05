@@ -13,6 +13,8 @@ from cls_obj.bus import Bus
 from cls_obj.trip import Trip
 from cls_obj.tripinstance import TripInStance
 from cls_obj.user import User
+from cls_obj.ticket import Ticket
+from cls_obj.buying import Buying
 
 app = Flask(__name__)
 
@@ -57,7 +59,6 @@ def add_company():
 @app.route("/home_company/<user>", methods=["GET"])
 def home_company(user):
     id = user
-    print("_id", id)
     company_collection = InitDatabaseMongoDB().account
     company = company_collection.find({"_id": ObjectId(id)})
     return render_template('home_company.html', id_company = id)
@@ -114,7 +115,6 @@ def add_driver_page(id_company):
 def add_driver():
     id_company = request.form['idcompany']
     bus_number = request.form['busnumber']
-    print("busnumber is ", bus_number)
     fullname = request.form['fullname']
     email = request.form['email']
     password = request.form['password']
@@ -142,9 +142,6 @@ def add_trip_instance(id_trip):
     buss = bus_collection.find({"owner_id" : id_company})
     trip_instance_collecton = InitDatabaseMongoDB().trip_instance
     trip_instances = trip_instance_collecton.find({"trip._id" : ObjectId(id_trip),'trip.company._id' : id_company})
-    # p = trip_instance_collecton.find({'trip[_id]' : '6452254fdadf26f7fccf7c74'})
-    # for i in p:
-    #     pprint.pprint(i)
     return render_template("add_trip_instance.html", trip = trip, buss = buss, trip_instances = trip_instances)
 
 @app.route("/add_trip_instance_post", methods=['POST'])
@@ -153,10 +150,8 @@ def add_trip_instance_post():
     date = request.form['date']
     time = request.form['time']
     id_bus = request.form['id_bus']
-    print(id_bus)
     trip__collection = InitDatabaseMongoDB().trip
     trip = trip__collection.find({'_id' : ObjectId(id_trip)})
-    pprint.pprint(trip[0])
     trip_instance = TripInStance(date, time, trip[0], id_bus)
     return jsonify({"message" : trip_instance.insert_data()})
 
@@ -171,10 +166,10 @@ def login():
         resp = jsonify({"message":"Not Have Accout"})
         return resp
     account = caccount_collection.find({"email" : email, "password" : password})
-    print('------------------------------------------')
+
     id = str(account[0]['_id'])
     user_type = account[0]['user_type']
-    print('------------------------------------------')
+
     resp = jsonify({"id" : id, "user_type" : user_type})
     return resp
 
@@ -211,8 +206,6 @@ def home_user(user):
     for trip in trips:
         departure_point.append(trip['departure_point'])
         destination_point.append(trip['destination_point'])
-    print(departure_point)
-    print(destination_point)
     return render_template('home_user_page.html', user_id = id, departure_point = departure_point, destination_point = destination_point)
 
 @app.route('/search_trip_instance', methods=['POST'])
@@ -250,20 +243,66 @@ def select_seat_page(user_id, trip_instance_id):
     buss = bus_collection.find({"_id":ObjectId(trip['id_bus'])})
     bus = buss[0]
     list_seates = bus['seats']
-     # TEST INSERT TICKET
     ticket_collection = InitDatabaseMongoDB().ticket
-    # ticket_collection.insert_one({'seat' : 'A1', 'trip_instance' : trip})
-     # TEST INSERT TICKET
-    print(trip_instance_id)
     tickets = ticket_collection.find({"trip_instance._id" : ObjectId(trip_instance_id)})
     list_seates_from_ticket = []
     for i in tickets:
         list_seates_from_ticket.append(i['seat'])
-
-    for i in list_seates:
-        if i in list_seates_from_ticket:
-            print(i)
     return render_template('select_seate_page.html',user_id = user_id, trip_instance_id = trip_instance_id, list_seates = list_seates, list_seates_from_ticket = list_seates_from_ticket)
+
+@app.route('/finish_select_seat', methods=['POST'])
+def finish_select_seat():
+    user_id = request.form['user_id']
+    trip_instance_id = request.form['trip_instance_id']
+    seates = request.form['seats']
+    seates = seates.split(",")
+    trip_instance_collection = InitDatabaseMongoDB().trip_instance
+    trips = trip_instance_collection.find({'_id': ObjectId(trip_instance_id)})
+    trip = trips[0]
+
+    # ticket_collection = InitDatabaseMongoDB().ticket
+    price = int(trip['trip']['price'])
+    amount = 0
+    ticket_list = []
+    for seat in seates:
+        amount = amount + price
+        t = Ticket(seat, trip)
+        docs = t.create_docs()
+        ticket_list.append(docs)
+        t.insert_data()
+    buying = Buying(amount,"รอการชำระเงิน", ticket_list,user_id)
+    buying_id = buying.insert_data()
+    return jsonify({"buying_id" : str(buying_id), "message" : "SUCCESS"})
+
+    
+@app.route('/paying/<buying_id>', methods=['GET'])
+def paing_page(buying_id):
+    buying_id = buying_id
+    buying_collection = InitDatabaseMongoDB().buying
+    buying = buying_collection.find({'_id':ObjectId(buying_id)})
+    buying = buying[0]
+    return render_template('paying_page.html', buying = buying)
+
+@app.route('/paying', methods=['POST'])
+def paying():
+    buying_id = request.form['buying_id']
+    tranction_id = request.form['tranction_id']
+    user_id = request.form['user_id']
+    buying_collection = InitDatabaseMongoDB().buying
+    buying_collection.update({'_id' : ObjectId(buying_id)}, {"$set": {'transaction' : tranction_id, 'buy_status' : 'ชำระเงินแล้ว'}})
+    return jsonify({"message" : "SUCCESS", "user_id" : user_id})
+
+@app.route('/history_page/<user_id>', methods=['GET'])
+def history_page(user_id):
+    user_id = user_id
+    print(user_id)
+    buying_collection = InitDatabaseMongoDB().buying
+    buyinges = buying_collection.find({'owner_id': user_id})
+    count = buying_collection.find({'owner_id': user_id}).count()
+    pprint.pprint(buyinges[0])
+    # for i in buyinges:
+    #     pprint.pprint(i)
+    return render_template('history_page.html', buyinges = buyinges, count = count)
 
 @app.route("/login_page")
 def login_page():

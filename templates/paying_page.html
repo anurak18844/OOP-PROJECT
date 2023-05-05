@@ -5,18 +5,12 @@
             $(document).ready(function (e) {
                 $('#upload').on('click', function () {
                 var form_data = new FormData();
-
-                var select = document.getElementById('busnumber');
-		        var option = select.options[select.selectedIndex];
-                
-                form_data.append("email", $('#email').val())
-                form_data.append("password", $('#password').val())
-                form_data.append("phone", $('#phone').val())
-                form_data.append("fullname", $('#fullname').val())
-                form_data.append("busnumber", $('#busnumber').val())
-                form_data.append("idcompany",  $('#idcompany').val())
+         
+                form_data.append("buying_id", $('#buying_id').val())
+                form_data.append("tranction_id", $('#tranction_id').val())
+                form_data.append("user_id", $('#user_id').val())
                 $.ajax({
-                    url: '/add_driver', // point to server-side URL
+                    url: '/paying', // point to server-side URL
                     dataType: 'json', // what to expect back from server
                     cache: false,
                     contentType: false,
@@ -31,28 +25,16 @@
                 },
                     success: function (data) {
                             text = data['message']
+                            user_id = data['user_id']
                             Swal.fire(
                                 'สำเร็จ',
                                 text,
                                 'success'
                             );
+                            window.location.href = '/home_user/' + user_id
                     },
                     complete: () => {
                         $.LoadingOverlay('hide')
-
-                        email = document.getElementById('email');
-                        email.value = '';
-
-                        select.selectedIndex = 0
-
-                        password = document.getElementById('password');
-                        password.value = '';
-
-                        phone = document.getElementById('phone');
-                        phone.value = '';
-
-                        fullname = document.getElementById('fullname');
-                        fullname.value = '';
                     }
                 });
             });
@@ -70,7 +52,10 @@
             <div class="collapse navbar-collapse" id="navbarText">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="/home_company/{{id_company}}">HOME</a>
+                        <a class="nav-link" href="/home_user/{{buying['owner_id']}}">HOME</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/history_page/{{buying['owner_id']}}">HISTORY</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/login_page">LOGOUT</a>
@@ -81,36 +66,20 @@
     </div>
 </nav>
     <div class="container mt-5">
-        <div class="h5 mb-5  text-center">ADD DRIVER</div>
+        <div class="h2 mb-5  text-center"> ราคารวม : {{buying['amount']}}</div>
         <!-- <form action="POST"> -->
-            <div class="mb-3">
-            Email address
-            <input type="email" class="form-control" id="email">
-            </div>
-            <div class="mb-3">
-            Password
-            <input type="password" class="form-control" id="password">
+            <div class="text-center">
+                <img src="{{ url_for('static', filename = 'uploads/FAKEQRCODE.png') }}" style="width: 300px;height:auto;">
             </div>
            <div class="mb-3">
-            Phonenumber
-            <input type="text" class="form-control" id="phone">
-           </div>
-           <div class="mb-3">
-            Full Name
-            <input type="text" class="form-control" id="fullname">
-           </div>
-           <div class="mb-3">
-            Bus Number 
-            <select class="form-select" aria-label="" id="busnumber">
-                {% for i in bus %}
-                <option value="{{i.bus_number}}">{{i.bus_number}}</option>
-                {% endfor %}
-            </select>
+            หมายเลขธุรกรรม/สลิปการโอนเงิน
+            <input type="text" class="form-control mt-2" id="tranction_id">
            </div>
            <div class="d-grid pt-3">
             <!-- <input type="submit" class="btn btn-primary" value="ADD COMPANY"></input> -->
-            <button id="upload" class="btn btn-primary">ADD DRIVER</button>
-            <input type="hidden" id="idcompany" value={{id_company}}>
+            <button id="upload" class="btn btn-primary">ยืนยัน</button>
+            <input type="hidden" id="buying_id" value='{{buying['_id']}}'>
+            <input type="hidden" id="user_id" value='{{buying['owner_id']}}'>
            </div>
           <!-- </form> -->
     </div>

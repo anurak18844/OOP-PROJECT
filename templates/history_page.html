@@ -1,0 +1,166 @@
+{% extends "layout.html" %}
+{% block title %}ADD TRIP{% endblock%}
+{% block content%}
+<script>
+    $(document).ready(function (e) {
+        $('#upload').on('click', function () {
+        var form_data = new FormData();
+        var select = document.getElementById('select_bus');
+		var option = select.options[select.selectedIndex];
+        
+        form_data.append("date", $('#date').val())
+        form_data.append("time", $('#time').val())
+        form_data.append("id_bus", $('#select_bus').val())
+        form_data.append("id_trip", $('#id_trip').val())
+        
+        $.ajax({
+            url: '/add_trip_instance_post', // point to server-side URL
+            dataType: 'json', // what to expect back from server
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: form_data,
+            type: 'POST',
+            beforeSend: function(){
+            $.LoadingOverlay('show', {
+                background: 'rgba(200,200,200,0.6)',
+                textResizeFactor: 0.15
+            });
+        },
+            success: function (data) {
+                    text = data['message']
+                    Swal.fire(
+                        'สำเร็จ',
+                        text,
+                        'success'
+                    );
+            },
+            complete: () => {
+                $.LoadingOverlay('hide')
+                date = document.getElementById('date');
+                date.value = '';
+                time = document.getElementById('time');
+                time.value = '';
+                select.selectedIndex = 0
+                window.location.reload();
+            }
+        });
+    });
+    return false;
+});
+</script>
+<nav class="navbar navbar-expand-lg navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand">BUS Online Ticket</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="d-flex justify-content-end">
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/home_user/{{buyinges[0]['owner_id']}}">HOME</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/history_page/{{buyinges[0]['owner_id']}}">HISTORY</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login_page">LOGOUT</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+    <div class="container mt-5">
+        <div class="h5 text-center">ประวัติการจองตั๋ว</div>
+       
+        <hr>
+        {% if count == 0%}
+        <div class="h1 mt-3">ไม่มีประวัติการจองตั๋ว</div>
+        {% else %}
+        {% for i in buyinges%}
+
+          <div class="card mb-3">
+            <div class="card-header">
+                <strong class="text-primary">เส้นทางการเดินทาง {{i['tickets'][0].trip_instance.trip.departure_point}} - {{i['tickets'][0].trip_instance.trip.destination_point}}</strong>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-around">
+                    <div class="text-center">
+                        <div class="row">
+                            <div class="col">
+                                <img src="{{ url_for('static', filename = 'uploads/'+i['tickets'][0].trip_instance.trip.company.img) }}"
+                                    style="width: 100px;height: 50px;">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <strong>{{i['tickets'][0].trip_instance.trip.company.company_name}}</strong>
+                            </div>
+                        </div>
+                        
+                    </div>
+    
+                    <div class="text-center">
+                        เวลาออกเดินทาง
+                        <div class="h5 mt-1">{{i['tickets'][0].trip_instance.date}} {{i['tickets'][0].trip_instance.time}}</div>
+                    </div>
+    
+                    <div class="text-center">
+                        สถานีขึ้น-ลง
+                        <ul>
+                            <li><strong>ต้นทาง : </strong>{{i['tickets'][0].trip_instance.trip.departure_station }}</li>
+                            <li><strong>ปลายทาง : </strong>{{i['tickets'][0].trip_instance.trip.destination_station }}</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="text-center">
+                        ราคา/ตั๋ว
+                       <div class="h3">THB {{i['tickets'][0].trip_instance.trip.price}}</div>
+                    </div>
+                    <!-- <div>
+                        <a href="/#" class="btn btn-primary mt-3" style="width: 150px;">เลือก</a>
+                    </div> -->
+                </div>
+                <hr>
+                <div class="d-flex justify-content-around">
+                    <div class="text-center">
+                    หมายเลขที่นั่ง
+                    <br>
+                    <div class="mt-3"></div>
+                    {%for j in i['tickets']%}
+                    <strong class="mt-5">{{j.seat}}</strong>
+                    {% endfor %}
+                    </div>
+                    <div class="text-center">
+                        ราคารวม 
+                        <br>
+                        <p class="h3 mt-3">THB {{i.amount}}</p>
+                    </div>
+                    <div class="text-center">สถานะการชำระเงิน
+                        <br>
+
+                    {% if i['buy_status'] == 'ชำระเงินแล้ว'%}
+                    <div>
+                        <button class="btn btn-success mt-3" style="width: 150px;">ชำระเงินแล้ว</button>
+                    </div>
+                    {% else %}
+                    <div>
+                        <a href="/paying/{{i['_id']}}" class="btn btn-warning mt-3 text-light" style="width: 150px;" >รอชำระเงิน</a>
+                    </div>
+                    {%endif%}
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+          {% endfor %}
+         {% endif %}
+    </div>
+{% endblock %}
+
+
+
+
+

@@ -20,11 +20,50 @@
 <script>
     $(document).ready(function (e) {
         $('#upload').on('click', function () {
-            $.LoadingOverlay('show', {
-                        background: 'rgba(200,200,200,0.6)',
-                        textResizeFactor: 0.15
+            a = document.getElementById("a").innerText
+            if(a == 'ยังไม่มีรายการที่ท่านเลือก'){
+                Swal.fire({
+                                icon: 'error',
+                                title: 'ขออภัย',
+                                text: 'ท่านไม่ได้เลือกที่นั่ง'
+                })
+            }
+            else{
+                var form_data = new FormData();
+                form_data.append("user_id",  $('#user_id').val())
+                form_data.append("trip_instance_id",  $('#trip_instance_id').val())
+                form_data.append("seats",  a)
+
+            $.ajax({
+                url: '/finish_select_seat',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: form_data,
+                type: 'POST',
+                beforeSend: function(){
+                $.LoadingOverlay('show', {
+                    background: 'rgba(200,200,200,0.6)',
+                    textResizeFactor: 0.15
+                });
+            },
+                success: function (data) {
+                        text = data['message']
+                        buying_id = data['buying_id']
+                        Swal.fire(
+                            'สำเร็จ',
+                            text,
+                            'success'
+                        );
+                        
+                },
+                complete: () => {
+                    $.LoadingOverlay('hide')
+                    window.location.href = "/paying/" + buying_id
+                }
             });
-            window.location.reload();
+
+            }
         });
 
 
@@ -69,13 +108,10 @@
             <div class="collapse navbar-collapse" id="navbarText">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="/login">Anurak</a>
+                        <a class="nav-link" href="/home_user/{{user_id}}">HOME</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">HOME</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/registor">LOG OUT</a>
+                        <a class="nav-link" href="/login_page">LOGOUT</a>
                     </li>
                 </ul>
             </div>
@@ -106,9 +142,8 @@
                     {% endfor %}
                 </div> 
             </div>
-            <!-- <div class="rotate-font mt-5 p-2">
-                <button type="button" class="btn btn-secondary" style="height: 70px; width: 240px;">หน้ารถ</button>
-            </div> -->
+            <input type="hidden" id="trip_instance_id" value={{trip_instance_id}}>
+            <input type="hidden" id="user_id" value={{user_id}}>
         </div>
     </div>
 {% endblock %}
